@@ -29,6 +29,7 @@ import java.util.concurrent.TimeoutException
  */
 
 //нужно сделать метод loadByCategory публичным
+//Здесь тест разных категорий и тест на корректоность данных о путешествии
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -41,7 +42,6 @@ class PhotosCategoriesTest {
     val chipActivity = ActivityScenarioRule(ChipActivity::class.java)
 
     private fun commonCategoryTest(categoryName: String, cityName: String) {
-        Intents.init()
         val commonScenario = mainActivity.scenario
         commonScenario.onActivity { currentActivity -> currentActivity.loadByCategory(categoryName) }
         assertTrue("There is no $cityName Error", Constants.PICKED_CITY_RU == cityName)
@@ -52,7 +52,6 @@ class PhotosCategoriesTest {
         intended(hasComponent(ChipActivity::class.java.name))
         onView(withId(R.id.cityTV)).check(matches(withText(Constants.PICKED_CITY_RU)))
         commonScenario.recreate()
-        Intents.init()
     }
 
     @Test
@@ -79,6 +78,14 @@ class PhotosCategoriesTest {
     @Test
     fun testOceanPhotoCategory() {
         commonCategoryTest("ocean", "Римини")
+    }
+    
+    @Test
+    fun testNomadApi(){
+        val nomadScenario = chipActivity.scenario
+        nomadScenario.onActivity { activity -> activity.getInfoNomad("Helsinki") }
+        onView(withId(R.id.countryTV)).check(matches(withText("Finland")))
+        onView(withId(R.id.cityTV)).check(matches(withText("Helsinki")))
     }
 }
 
